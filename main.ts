@@ -8,6 +8,8 @@ const MOMENTUM_MIN = 0.0035;
 const TRAIL = 0.009;
 const HARD_STOP = 0.02;
 const COOLDOWN = 45;
+const MAX_ENTRIES = 3;
+const LOSS_LOCKOUT = 2;
 const SIZE_NUM = 97;
 const SIZE_DEN = 100;
 const SLIP = 300;
@@ -21,6 +23,8 @@ let emaTrend: number | null = null;
 let entryRef: number | null = null;
 let peak: number | null = null;
 let cooldownBarsLeft = 0;
+let entries = 0;
+let losingExits = 0;
 
 function updateEma(previous: number | null, close: number, period: number): number {
   if (previous === null) return close;
@@ -57,6 +61,7 @@ runBars({
           close < entryRef * (1 - HARD_STOP)
         ) {
           cooldownBarsLeft = COOLDOWN;
+          if (close < entryRef) losingExits += 1;
           return [{
             side: 'sell',
             symbol,
@@ -72,6 +77,8 @@ runBars({
 
       if (
         state.warmingUp ||
+        entries >= MAX_ENTRIES ||
+        losingExits >= LOSS_LOCKOUT ||
         closes.length < TREND ||
         cooldownBarsLeft !== 0 ||
         state.seq > LAST_ENTRY_SEQ ||
@@ -92,6 +99,7 @@ runBars({
         if (notional >= 1_000_000n) {
           entryRef = close;
           peak = close;
+          entries += 1;
           return [{
             side: 'buy',
             symbol,
