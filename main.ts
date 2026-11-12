@@ -2,12 +2,12 @@ import { runBars, type BarsState } from './vendor/makefun-bars.ts';
 
 const FAST = 15;
 const SLOW = 50;
-const TREND = 150;
+const TREND = 100;
 const MOMENTUM_BARS = 60;
-const MOMENTUM_MIN = 0.0025;
-const TRAIL = 0.009;
+const MOMENTUM_MIN = 0.0035;
+const TRAIL = 0.02;
 const HARD_STOP = 0.02;
-const COOLDOWN = 45;
+const COOLDOWN = 120;
 const MAX_ENTRIES = 3;
 const LOSS_LOCKOUT = 2;
 const SIZE_NUM = 97;
